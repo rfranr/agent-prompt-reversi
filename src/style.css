@@ -1,0 +1,31 @@
+* { box-sizing: border-box; }
+:root { font-family: system-ui, sans-serif; color: #172d25; background: #f3f1e9; font-synthesis: none; }
+body { margin: 0; }
+main { max-width: 620px; padding: 28px 16px; margin: auto; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 22px; }
+h1 { font-size: 2.6rem; margin: 0; letter-spacing: -.06em; }
+.eyebrow { font-size: .65rem; letter-spacing: .15em; font-weight: 700; margin: 0 0 4px; }
+button { font: inherit; }
+.restart { border: 1px solid #176448; background: transparent; color: #174b36; border-radius: 8px; padding: 10px 16px; cursor: pointer; font-weight: 600; }
+.restart:hover { background: #e0e8dc; }
+.scores { display: flex; gap: 12px; }
+.score { display: flex; align-items: center; gap: 10px; padding: 12px; flex: 1; background: #e7e6de; border: 2px solid transparent; border-radius: 10px; }
+.score.active { border-color: #176448; background: #fffdf6; }
+.score strong { margin-left: auto; font-size: 1.5rem; }
+.disc { display: block; border-radius: 50%; width: 76%; aspect-ratio: 1; box-shadow: 0 2px 3px #0005; }
+.disc.black { background: #202623; border: 1px solid #0d1711; }
+.disc.white { background: #fffdf1; border: 1px solid #d5d3c8; }
+.score .disc { width: 24px; flex-shrink: 0; }
+.status { display: flex; flex-direction: column; gap: 4px; margin: 20px 0 14px; min-height: 52px; }
+.status span { font-size: .88rem; }
+.board { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; background: #0b402e; border: 5px solid #0b402e; border-radius: 8px; overflow: hidden; }
+.square { aspect-ratio: 1; border: 0; padding: 0; display: flex; justify-content: center; align-items: center; position: relative; background: #267653; color: #e2f2e8; min-width: 0; }
+.square:disabled { opacity: 1; }
+.square.legal { background: #31855f; cursor: pointer; }
+.square.legal:hover { background: #499975; }
+.coordinate { position: absolute; left: 3px; top: 2px; font-size: clamp(.45rem, 1.6vw, .6rem); opacity: .8; }
+.hint { width: 24%; aspect-ratio: 1; border: 2px solid #d2e7ac; border-radius: 50%; }
+button:focus-visible { outline: 3px solid #d58a14; outline-offset: 2px; z-index: 1; }
+.square:focus-visible { outline-offset: -3px; }
+.help { color: #52635b; line-height: 1.6; font-size: .85rem; }
+@media (max-width: 380px) { main { padding: 16px 8px; } .score { padding: 8px; gap: 6px; } }
