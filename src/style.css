@@ -29,3 +29,8 @@ button:focus-visible { outline: 3px solid #d58a14; outline-offset: 2px; z-index:
 .square:focus-visible { outline-offset: -3px; }
 .help { color: #52635b; line-height: 1.6; font-size: .85rem; }
 @media (max-width: 380px) { main { padding: 16px 8px; } .score { padding: 8px; gap: 6px; } }
+
+.settings { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+.settings label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+.settings select { font: inherit; padding: 8px; border-radius: 6px; }
+.settings small { width: 100%; }
