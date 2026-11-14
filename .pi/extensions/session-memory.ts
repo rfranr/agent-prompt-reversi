@@ -11,8 +11,6 @@ import {
 import { homedir } from 'node:os';
 import { basename, join } from 'node:path';
 
-const MEMORY_ROOT = '/home/rfranr/source/github.com/rfranr/memory-cli';
-const MEMORY_DB = join(MEMORY_ROOT, 'rag-sessions-clean.sqlite');
 const OUTPUT_DIR = join(homedir(), '.local/share/pi-memory/sessions');
 const LOG_FILE = '/tmp/pi-memory-index.log';
 
@@ -36,18 +34,20 @@ function extractConversation(sessionFile: string): string {
     if (!line.trim()) continue;
 
     const record = JSON.parse(line) as PiRecord;
+
     if (record.type !== 'message') continue;
 
     const role = record.message?.role;
     if (role !== 'user' && role !== 'assistant') continue;
 
     const content = record.message?.content;
-    const text = typeof content === 'string'
-      ? content
-      : (content ?? [])
-          .filter((part) => part.type === 'text')
-          .map((part) => part.text ?? '')
-          .join('\n');
+    const text =
+      typeof content === 'string'
+        ? content
+        : (content ?? [])
+            .filter((part) => part.type === 'text')
+            .map((part) => part.text ?? '')
+            .join('\n');
 
     if (!text.trim()) continue;
 
@@ -63,9 +63,16 @@ function extractConversation(sessionFile: string): string {
 
 export default function (pi: ExtensionAPI) {
   pi.on('session_start', (event, ctx) => {
-    if (event.reason !== 'new' || !event.previousSessionFile) return;
+    if (event.reason !== 'new' || !event.previousSessionFile) {
+      return;
+    }
 
     const sessionFile = event.previousSessionFile;
+    const projectRoot = ctx.cwd;
+    const memoryCli = join(
+      projectRoot,
+      'node_modules/.bin/memory-cli',
+    );
 
     try {
       const cleanText = extractConversation(sessionFile);
@@ -83,34 +90,36 @@ export default function (pi: ExtensionAPI) {
 
       try {
         const child = spawn(
-          'pnpm',
+          memoryCli,
           [
-            'start',
             'index',
             outputFile,
             '--metadata',
             JSON.stringify({
               type: 'session',
-              project: basename(ctx.cwd),
+              project: basename(projectRoot),
               originalSession: sessionFile,
             }),
           ],
           {
-            cwd: MEMORY_ROOT,
-            env: {
-              ...process.env,
-              RAG_CLI_DB: MEMORY_DB,
-            },
+            cwd: projectRoot,
+            env: process.env,
             stdio: ['ignore', log, log],
-            detached: true,
           },
         );
 
         child.on('error', (error) => {
-          console.error('Memory indexing failed:', error);
+          console.error('Memory indexing failed to start:', error);
+        });
+
+        child.on('exit', (code) => {
+          if (code !== 0) {
+            console.error(`Memory indexing exited with code ${code}`);
+          }
         });
 
         child.unref();
+
         ctx.ui.notify('Session memory indexing launched', 'info');
       } finally {
         closeSync(log);
